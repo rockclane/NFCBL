@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NFCBL.Views.AboutPage"
+             xmlns:vm="clr-namespace:NFCBL.ViewModels"
+             Title="{Binding Title}">
+    
+    <ContentPage.BindingContext>
+        <vm:AboutViewModel />
+    </ContentPage.BindingContext>
+    
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Accent">#96d1ff</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+        <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="10,10" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+            <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                <Label FontSize="Large"
+                   HorizontalOptions="CenterAndExpand"
+                   Text="NFC BL OOB Paring" />
+                <Button Clicked="Button_Clicked_StartListening"
+                    IsEnabled="{Binding NfcIsEnabled}"
+                    Text="Read Tag" />
+                <Button Clicked="Button_Clicked_Connected"
+                    IsEnabled="{Binding NfcIsEnabled}"
+                    Text="Check Tag Connected" />
+                <Button Clicked="Button_Clicked_StopListening"
+                    IsEnabled="{Binding NfcIsEnabled}"
+                    Text="Stop Listener" />
+                <Label  x:Name="TagReader" HorizontalOptions="StartAndExpand" FontSize="Medium" VerticalOptions="StartAndExpand" />
+            </StackLayout>
+            <Frame Grid.Row="2" BorderColor="Gray" HasShadow="False">
+                <StackLayout>
+                    <StackLayout Padding="0"
+                                 HorizontalOptions="CenterAndExpand"
+                                 Orientation="Horizontal"
+                                 Spacing="0">
+
+                        <CheckBox x:Name="ChkReadOnly"
+                                  IsChecked="False"
+                                  IsEnabled="{Binding NfcIsEnabled}"
+                                  VerticalOptions="Center"
+                                  Color="Red" />
+
+                        <Label FontAttributes="Bold"
+                               Text="Make Tag Read-Only"
+                               TextColor="Red"
+                               VerticalOptions="Center" />
+                    </StackLayout>
+
+                    <Button Clicked="Button_Clicked_StartWriting"
+                            IsEnabled="{Binding NfcIsEnabled}"
+                            Text="Write Tag (Text)" />
+
+                    <Button Clicked="Button_Clicked_StartWriting_Uri"
+                            IsEnabled="{Binding NfcIsEnabled}"
+                            Text="Write Tag (Bluetooth)" />
+
+                    <Button Clicked="Button_Clicked_StartWriting_Custom"
+                            IsEnabled="{Binding NfcIsEnabled}"
+                            Text="Write Tag (Custom)" />
+
+                </StackLayout>
+            </Frame>
+            <StackLayout Grid.Row="3"  HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" >
+            <Button Clicked="Button_Clicked_FormatTag"
+                    IsEnabled="{Binding NfcIsEnabled}"
+                    Text="Clear Tag" />
+
+            <Label Margin="0,6,0,0"
+                   Padding="12,6"
+                   BackgroundColor="Blue"
+                   HorizontalOptions="CenterAndExpand"
+                   IsVisible="{Binding DeviceIsListening}"
+                   Text="Listening for NFC Tag..."
+                   TextColor="White" />
+           <Label  x:Name="MacAddressData" Margin="0,6,0,0"
+                   Padding="12,6"
+                   BackgroundColor="Green"
+                   HorizontalOptions="CenterAndExpand"
+                   IsVisible="{Binding IsMacAddressFound}"
+                   FontSize="Small"
+                   TextColor="White" />
+            <Button  x:Name="BlConnect" IsVisible="{Binding IsMacAddressFound}" IsEnabled="{Binding IsMacAddressFound}" Clicked="Button_Clicked_BluetoothConnect" Text="Establish Connection BT" />
+                <Button  Clicked="Button_Clicked_BlueetoothMessage" x:Name="WriteButton" Text="Write via BLuetooth" />
+                <Button  Clicked="Button_Clicked_BlueetoothReadMessage" x:Name="ReadButton" Text="Read via BLuetooth" />
+                <Label x:Name="RssiValue"  Padding="12,6" 
+                   BackgroundColor="Black"
+                   HorizontalOptions="CenterAndExpand"
+                   FontSize="Small"
+                   TextColor="White" >
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"  ></TapGestureRecognizer>
+                    </Label.GestureRecognizers>
+                </Label>
+                <!--<Label Margin="0,6,0,0"
+                   Padding="12,6"
+                   BackgroundColor="Red"
+                   HorizontalOptions="CenterAndExpand"
+                   IsVisible="{Binding NfcIsDisabled}"
+                   Text="NFC IS DISABLED"
+                   TextColor="White" />-->
+            </StackLayout>
+
+        </Grid>
+    </ScrollView>
+
+</ContentPage>

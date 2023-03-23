@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="6" android:versionName="3.6" package="com.companyname.nfcbl" android:installLocation="auto">
+	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="31" />
+	<application android:label="NFCBL.Android" android:theme="@style/MainTheme">
+			<!--<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+			<intent-filter>
+				<action android:name="android.nfc.action.TAG_DISCOVERED" />
+
+				<category android:name="android.intent.category.DEFAULT" />
+
+				<data android:mimeType="application/vnd.bluetooth.ep.oob" />
+			</intent-filter>>-->
+
+		<meta-data
+			android:name="android.nfc.action.TECH_DISCOVERED"
+			android:resource="@xml/nfc_tech_filter" />
+	</application>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.BIND_NFC_SERVICE" />
+	<uses-permission android:name="android.permission.NFC" />
+	<uses-permission android:name="android.permission.NFC_PREFERRED_PAYMENT_INFO" />
+	<uses-permission android:name="android.permission.NFC_TRANSACTION_EVENT" />
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.BLUETOOTH" />
+	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+	<uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+	<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+	<uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+	<uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
+
+	<uses-feature android:name="android.hardware.nfc" android:required="true" />
+
+</manifest>
