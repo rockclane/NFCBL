@@ -35,7 +35,7 @@ namespace NFCBL.Services
         Task PairAndConnectViaRFComm(string address,string message);
         bool GetBluetoothAndBondDevice(string address);
         Task<string> ReadBluetoothMessage();
-
+     
         bool IsConnected { get; }
         void ReadBluetoothStregnth();
     }

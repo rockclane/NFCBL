@@ -195,7 +195,7 @@ namespace NFCBL.Droid
             }
         }
     }
-
+     
     public class BluetoothDeviceReceiver : BroadcastReceiver
     {
 
@@ -243,6 +243,7 @@ namespace NFCBL.Droid
                         break;
                     case 4:
                         int pin = intent.GetIntExtra("android.bluetooth.device.extra.PAIRING_KEY", 1234);
+                        InvokeAbortBroadcast();
                         MessagingCenter.Send<string, int>((string)this, "PinDetected", pin);
                       
                         //the pin in case you need to accept for an specific pin

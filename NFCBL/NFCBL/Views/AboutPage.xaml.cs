@@ -60,6 +60,7 @@ namespace NFCBL.Views
 
 		private bool _nfcIsEnabled;
         private IBluetoothConnection connection;
+        private BluetoothDeviceModel deviceToPair;
 
         public bool NfcIsEnabled
 		{
@@ -211,9 +212,27 @@ namespace NFCBL.Views
 
 				if (Device.RuntimePlatform == Device.iOS)
 					_isDeviceiOS = true;
-				
-				
-				SubscribeEvents();
+				if (string.IsNullOrEmpty(macaddress))
+				{
+					WriteButton.IsEnabled = true;
+					await ShowAlert("Mac Addres is Null so please keep it in the cradle to detect the macaddress and press on connect bl", "No NFC Tag Detected");
+				}
+				else
+				{
+					var list = _bluetoothAdapter.BondedDevices;
+					deviceToPair = list.Where(x => x.Address == macaddress).FirstOrDefault();
+					if (deviceToPair != null)
+					{
+						BlConnect.IsEnabled = true;
+						IsBluetoothFound = true;
+						ReadButton.IsEnabled = true;
+						WriteButton.IsEnabled = true;
+						connection = _bluetoothAdapter.CreateConnection(deviceToPair);
+						// await connection.ConnectAsync();
+					}
+				}
+               
+                SubscribeEvents();
 				
 				//await StartListeningIfNotiOS();
 			}
@@ -453,7 +472,7 @@ namespace NFCBL.Views
 						};
 						break;
 					case NFCNdefTypeFormat.Mime:
-						string result2 = await DisplayPromptAsync("Add ANy Text", "Anything", maxLength: 18, keyboard: Keyboard.Default);
+						string result2 = await DisplayPromptAsync("Add ANy Text", "Anything", maxLength: 200, keyboard: Keyboard.Default);
 						record2 = new NFCNdefRecord
 						{
 							TypeFormat = NFCNdefTypeFormat.Mime,
@@ -699,11 +718,10 @@ namespace NFCBL.Views
 					WriteButton.IsEnabled = false;
 					BlConnect.IsEnabled = false;
 					//}
-					var list = _bluetoothAdapter.BondedDevices;
-					var deviceToPair = list.Where(x => x.Address == macaddress).FirstOrDefault();
+				
 					if (deviceToPair == null)
 					{
-						var connection = DependencyService.Get<IBTConnectionService>().GetBluetoothAndBondDevice(macaddress);
+						var connection = DependencyService.Get<IBlBondedService>().GetBluetoothAndBondDevice(macaddress);
 					}
                     else
                     {
@@ -712,7 +730,7 @@ namespace NFCBL.Views
 						ReadButton.IsEnabled = true;
 						WriteButton.IsEnabled = true;
 						 connection = _bluetoothAdapter.CreateConnection(deviceToPair);
-						await connection.ConnectAsync();
+					   // await connection.ConnectAsync();
 					}
 					//if (connection)
 					//{
@@ -745,29 +763,42 @@ namespace NFCBL.Views
         {
             try
             {
-				string result1 = await DisplayPromptAsync("Enter Some message you want to Send to BL", "Random Message", initialValue: "Hello Delta", maxLength: 21, keyboard: Keyboard.Default);
+				//string result1 = await DisplayPromptAsync("Enter Some message you want to Send to BL", "Random Message", initialValue: "Hello Delta", maxLength: 200, keyboard: Keyboard.Default);
 				if (IsBluetoothFound)
 				{
 					if (connection != null)
 					{
 						byte[] buffer = new byte[1056];
-						buffer = Encoding.ASCII.GetBytes(result1);
-						try
-						{
-							await connection.TransmitAsync(buffer, 0, buffer.Length);
-						}
-						catch (Exception exception)
-						{
-							await DisplayAlert("Exception", exception.Message, "Close");
-						}
+						buffer = Encoding.ASCII.GetBytes(editor.Text);
+						//try
+						//{
+						//	await connection.TransmitAsync(buffer, 0, buffer.Length);
+						//}
+						//catch (Exception exception)
+						//{
+						//	await DisplayAlert("Exception", exception.Message, "Close");
+						//}
+						//var connection = DependencyService.Get<IBTConnectionService>().PairAndConnectViaRFComm(macaddress, result1);
+						var connection = await DependencyService.Get<IBlBondedService>().PairAndConnectViaSecuredRFComm(macaddress, editor.Text);
+
+						editor.Text = $"Messagge from CPU" + Environment.NewLine
+										 + connection.ToString();
+						
 					}
-							
+
 				}
 				else
 				{
 
 				
-					var connection = DependencyService.Get<IBTConnectionService>().PairAndConnectViaRFComm(macaddress, result1);
+					//var connection = DependencyService.Get<IBTConnectionService>().PairAndConnectViaRFComm(macaddress, result1);
+					var connection =  await DependencyService.Get<IBlBondedService>().PairAndConnectViaSecuredRFComm(macaddress, editor.Text);
+					//await ShowAlert(connection, "MessageFromCPU");
+
+					editor.Text = $"Messagge from CPU" + Environment.NewLine
+					                 + connection.ToString();
+					
+					
 				}
 
 			}
@@ -845,6 +876,7 @@ namespace NFCBL.Views
 				await ShowAlert(ex.Message);
 			}
 		}
+
     }
 
 

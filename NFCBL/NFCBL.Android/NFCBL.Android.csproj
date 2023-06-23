@@ -67,8 +67,11 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AndriodNetworkStream.cs" />
     <Compile Include="MainActivity.cs" />
+    <Compile Include="NFCServices\AndriodClientHandler.cs" />
     <Compile Include="NFCServices\BluetoothTransferUnitBase.cs" />
+    <Compile Include="NFCServices\BondedService.cs" />
     <Compile Include="NFCServices\BTConnectionService.cs" />
     <Compile Include="NFCServices\ConcurrentValue.cs" />
     <Compile Include="NFCServices\CrossNFC.cs" />
@@ -77,6 +80,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidAsset Include="Assets\ca.crt" />
+    <AndroidAsset Include="Assets\handheld.crt" />
+    <AndroidAsset Include="Assets\handheld.key" />
+    <AndroidAsset Include="Assets\handheld.pfx" />
+    <AndroidAsset Include="Assets\bags.iotintegration.jks" />
+    <AndroidAsset Include="Assets\bags.iotintegration.pfx" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml" />

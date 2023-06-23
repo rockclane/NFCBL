@@ -85,7 +85,13 @@
                    FontSize="Small"
                    TextColor="White" />
             <Button  x:Name="BlConnect" IsVisible="{Binding IsMacAddressFound}" IsEnabled="{Binding IsMacAddressFound}" Clicked="Button_Clicked_BluetoothConnect" Text="Establish Connection BT" />
-                <Button  Clicked="Button_Clicked_BlueetoothMessage" x:Name="WriteButton" Text="Write via BLuetooth" />
+                <StackLayout>
+                    <Frame BorderColor="Gray"  HasShadow="False">
+                        <Editor x:Name="editor" Text="Default Text Hello Delta" FontSize="Small" HeightRequest="300" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"></Editor>
+                    </Frame>
+                    <Button  Clicked="Button_Clicked_BlueetoothMessage" x:Name="WriteButton" Text="Write via BLuetooth" />
+                </StackLayout>
+               
                 <Button  Clicked="Button_Clicked_BlueetoothReadMessage" x:Name="ReadButton" Text="Read via BLuetooth" />
                 <Label x:Name="RssiValue"  Padding="12,6" 
                    BackgroundColor="Black"

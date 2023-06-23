@@ -5,7 +5,6 @@ using System;
 using NFCBL.Services;
 using Zebra.Sdk.Comm;
 using Xamarin.Forms;
-using NFCBL.Droid.NFCServices;
 using System.Threading.Tasks;
 using System.Threading;
 using NFCBL.Models.Exceptions;
@@ -14,8 +13,13 @@ using Android.Util;
 using Android.OS;
 using Xamarin.Essentials;
 using Java.Util;
+using System.Security.Cryptography.X509Certificates;
+using Android.Content;
+using Android.Content.Res;
+using Javax.Net.Ssl;
+using Java.Security;
 
-[assembly: Dependency(typeof(BTConnectionService))]
+[assembly: Dependency(typeof(NFCBL.Droid.NFCServices.BTConnectionService))]
 namespace NFCBL.Droid.NFCServices
 {
     public class BTConnectionService : IBTConnectionService
@@ -25,7 +29,12 @@ namespace NFCBL.Droid.NFCServices
         private BluetoothConnection connection1;
         private BluetoothSocket _socket;
         private string _bluetoothDeviceAddress;
-        private readonly UUID SppRecordUUID = UUID.FromString("00001101 - 0000 - 1000 - 8000 - 00805F9B34FB");
+        private Context context;
+        private AssetManager contextManager;
+        private X509Certificate2 rootCACertificate;
+        private X509Certificate2 signedCACertificate;
+        private X509Certificate2 privateKey;
+        public const string SppRecordUUID = "00001101-0000-1000-8000-00805F9B34FB";
         public BTConnectionService()
         {
             bluetoothAdapter = BluetoothAdapter.DefaultAdapter;
@@ -156,7 +165,11 @@ namespace NFCBL.Droid.NFCServices
         }
         private async Task CreateSocketAndConnectAsync(BluetoothDevice device, string message)
         {
-            var socket = device.CreateRfcommSocketToServiceRecord(SppRecordUUID);
+           // LoadSSLCertificates();
+
+           // TrustSSLCertificatesWithSSLStream();
+
+            var socket = device.CreateRfcommSocketToServiceRecord(UUID.FromString(SppRecordUUID));
 
             if (socket == null)
             {
@@ -182,6 +195,70 @@ namespace NFCBL.Droid.NFCServices
             }
         }
 
+        //private void TrustSSLCertificatesWithSSLStream()
+        //{
+        //    // Create an SSL context
+        //    var sslContext = SSLContext.GetInstance("TLS");
+
+        //    // Initialize the SSL context
+        //    var keyManagerFactory = KeyManagerFactory.GetInstance(KeyManagerFactory.DefaultAlgorithm);
+        //    var keyStore = KeyStore.GetInstance("PKCS12");
+
+        //    keyStore.Load(context.Resources.Assets.Open("privateKey.pfx"), "password".ToCharArray());
+        //    keyManagerFactory.Init(keyStore, "password".ToCharArray());
+
+        //    var trustManagerFactory = TrustManagerFactory.GetInstance(TrustManagerFactory.DefaultAlgorithm);
+        //    var trustStore = KeyStore.GetInstance(KeyStore.DefaultType);
+            
+        //    trustStore.Load(null, null);
+        //    trustStore.SetCertificateEntry("root_ca", rootCACertificate);
+        //    trustStore.SetCertificateEntry("signed_ca", signedCACertificate);
+        //    trustManagerFactory.Init(trustStore);
+
+        //    sslContext.Init(keyManagerFactory.GetKeyManagers(), trustManagerFactory.GetTrustManagers(), null);
+
+        //}
+
+        private void LoadSSLCertificates()
+        {
+             contextManager = Android.App.Application.Context.Assets;
+
+            var assetManager = Android.App.Application.Context.Assets;
+            var certificateBytes = new byte[0];
+            var certificateBytes1 = new byte[0];
+            var certificateBytes2 = new byte[0];
+
+
+            using (var certificateStream = assetManager.Open("ca.crt"))
+            using (var memoryStream = new MemoryStream())
+            {
+                certificateStream.CopyTo(memoryStream);
+                certificateBytes = memoryStream.ToArray();
+            }
+
+            using (var certificateStream1 = assetManager.Open("handheld.crt"))
+            using (var memoryStream = new MemoryStream())
+            {
+                certificateStream1.CopyTo(memoryStream);
+                certificateBytes1 = memoryStream.ToArray();
+            }
+
+            using (var certificateStream2 = assetManager.Open("handheld.key"))
+            using (var memoryStream = new MemoryStream())
+            {
+                certificateStream2.CopyTo(memoryStream);
+                certificateBytes2 = memoryStream.ToArray();
+            }
+            // Load the Root CA
+            rootCACertificate = new X509Certificate2(certificateBytes);
+
+            // Load the Signed CA
+           signedCACertificate = new X509Certificate2(certificateBytes1);
+
+            // Load the private key
+            privateKey = new X509Certificate2(certificateBytes2);
+
+        }
 
         public bool IsConnected
         {
